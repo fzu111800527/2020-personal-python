@@ -8,7 +8,7 @@ def readjson(addr):
     f2 = open('data.json', 'w', encoding='utf-8')
     for file in filelist:
         pathname = addr + '\\' + file
-        f = open(pathname,'r',encoding='utf-8')
+        f = open(pathname, 'r', encoding='utf-8')
         for line in f:
             data = json.loads(line)
             f2.write(line)
@@ -25,14 +25,14 @@ def calculate_result(datalist, username, reponame, eventname):
                 count += 1
             else:
                 pass
-        elif len(username)==0 and len(reponame) != 0:
+        elif len(username) == 0 and len(reponame) != 0:
             if reponame == da['repo']['name'] and da['type'] == eventname:
-                count +=1
+                count += 1
             else:
                 pass
-        elif len(username)!=0 and len(reponame)!=0:
-            if username==da['actor']['login'] and reponame==da['repo']['name'] and eventname==da['type']:
-                count+=1
+        elif len(username) != 0 and len(reponame) != 0:
+            if username == da['actor']['login'] and reponame == da['repo']['name'] and eventname == da['type']:
+                count += 1
         else:
             pass
     print(count)
@@ -57,10 +57,10 @@ def main():
     reponame = args.repo
     eventname = args.event
     l = []
-    data = open('data.json','r',encoding='utf-8')
+    data = open('data.json', 'r', encoding='utf-8')
     for da in data:
         l.append(json.loads(da))
-    calculate_result(l,username,reponame,eventname)
+    calculate_result(l, username, reponame, eventname)
 
 
 if __name__ == "__main__":
