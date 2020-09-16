@@ -1,31 +1,42 @@
 import json
-import getopt
-import sys
+import argparse
 import os
 
 
 def readjson(addr):
-    filelist = os.listdir(addr)  # 读取文件列表
+    filelist = os.listdir(addr)
     f2 = open('data.json', 'w', encoding='utf-8')
-    for file in filelist:  # 读json文件
-        if file[-5:] == '.json':
-            pathname = addr + '\\' + file
-            with open(pathname, encoding='utf-8') as f:
-                for line in f:
-                    f2.write(line)  # 写入data.json
+    for file in filelist:
+        pathname = addr + '\\' + file
+        f = open(pathname,'r',encoding='utf-8')
+        for line in f:
+            data = json.loads(line)
+            f2.write(line)
+    f2.close()
+    f.close()
     return
 
 
-def calculate_result(data, username, reponame, eventname):
+def calculate_result(datalist, username, reponame, eventname):
     count = 0
-    for line in data:
-        if not len(username) == 0:
-            if username == da['actor']['login']:
-                if not reponame == 0:
-                    if reponame == da['repo']['name']:
-                        if da['type'] == eventname:
-                            count += 1
-    return count
+    for da in datalist:
+        if len(username) != 0 and len(reponame) == 0:
+            if username == da['actor']['login'] and da['type'] == eventname:
+                count += 1
+            else:
+                pass
+        elif len(username)==0 and len(reponame) != 0:
+            if reponame == da['repo']['name'] and da['type'] == eventname:
+                count +=1
+            else:
+                pass
+        elif len(username)!=0 and len(reponame)!=0:
+            if username==da['actor']['login'] and reponame==da['repo']['name'] and eventname==da['type']:
+                count+=1
+        else:
+            pass
+    print(count)
+    return
 
 
 def main():
@@ -33,23 +44,23 @@ def main():
     username = ''
     reponame = ''
     eventname = ''
-    options, args = getopt.getopt(sys.argv[1:], 'i:u:r:e:', ['init=', 'user=', 'repo=', 'event='])
-    if options in ('-i', '--init'):
-        readjson(options[0][1])
-        print(0)
-        exit()
-    else:
-        with open("data.json", encoding='utf-8') as f:
-            for line in f:
-                data.append(json.loads((line)))
-    for name, value in options:
-        if name in ('-u'):
-            username = value
-        if name in ('-r'):
-            reponame = value
-        if name in ('-e'):
-            eventname = value
-    print(calculate_result(data, username, reponame, eventname))
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--init', default='')
+    parser.add_argument('-u', '--user', default='')
+    parser.add_argument('-r', '--repo', default='')
+    parser.add_argument('-e', '--event', default='')
+    args = parser.parse_args()
+    datapath = args.init
+    if len(datapath) != 0:
+        readjson(datapath)
+    username = args.user
+    reponame = args.repo
+    eventname = args.event
+    l = []
+    data = open('data.json','r',encoding='utf-8')
+    for da in data:
+        l.append(json.loads(da))
+    calculate_result(l,username,reponame,eventname)
 
 
 if __name__ == "__main__":
